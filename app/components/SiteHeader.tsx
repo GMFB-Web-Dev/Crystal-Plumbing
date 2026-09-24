@@ -19,7 +19,12 @@ export default function SiteHeader() {
       <nav className="desktop-nav" aria-label="Main navigation">
         <Link href="/">Home</Link>
         <div className="nav-dropdown">
-          <Link href="/services">Services <span aria-hidden="true">⌄</span></Link>
+          <Link href="/services">
+            Services
+            <svg className="nav-chevron" aria-hidden="true" viewBox="0 0 12 8">
+              <path d="m1 1.5 5 5 5-5" />
+            </svg>
+          </Link>
           <div className="nav-dropdown-menu">
             <Link href="/services">All services</Link>
             {services.map((service) => <Link href={service.href} key={service.slug}>{service.title}</Link>)}
