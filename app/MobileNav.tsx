@@ -1,13 +1,16 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 const links = [
-  ["About", "#about"],
-  ["Services", "#services"],
-  ["Projects", "#projects"],
-  ["Contact", "#contact"],
+  ["Home", "/"],
+  ["Services", "/services"],
+  ["— Plumbing", "/services/plumbing"],
+  ["— Gas fitting", "/services/gas-fitting"],
+  ["Projects", "/projects"],
+  ["Contact", "/contact"],
 ];
 
 export default function MobileNav() {
@@ -30,18 +33,14 @@ export default function MobileNav() {
       {open && (
         <nav className="mobile-menu" aria-label="Mobile navigation">
           {links.map(([label, href]) => (
-            <a
+            <Link
               href={href}
               key={href}
-              onClick={(event) => {
-                event.preventDefault();
-                setOpen(false);
-                document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
-                window.history.pushState(null, "", href);
-              }}
+              className={label.startsWith("—") ? "mobile-sub-link" : undefined}
+              onClick={() => setOpen(false)}
             >
               {label}
-            </a>
+            </Link>
           ))}
           <a href="tel:0276976797" onClick={() => setOpen(false)}>Call 027 697 6797</a>
         </nav>
