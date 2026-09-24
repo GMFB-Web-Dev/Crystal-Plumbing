@@ -1,5 +1,16 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Contact form email
+
+The sitewide contact form sends enquiries through Resend from the server-side `/api/contact` route. Configure these environment variables in Vercel:
+
+```bash
+RESEND_API_KEY=re_your_api_key
+CONTACT_FORM_TO_EMAIL=enquiries@example.com
+```
+
+`CONTACT_FORM_FROM_EMAIL` is optional. Until a custom sending domain is verified in Resend, the form uses Resend's testing sender (`onboarding@resend.dev`). Browser submissions are accepted from `https://crystal-plumbing.vercel.app`; localhost origins are accepted only during development.
+
 ## Getting Started
 
 First, run the development server:
