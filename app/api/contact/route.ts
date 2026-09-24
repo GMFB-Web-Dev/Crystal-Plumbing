@@ -183,9 +183,7 @@ export async function POST(request: Request) {
   try {
     const resend = new Resend(apiKey);
     const { error } = await resend.emails.send({
-      from:
-        process.env.CONTACT_FORM_FROM_EMAIL ||
-        "Crystal Plumbing Website <crystal-plumbing@weblaunch.co.nz>",
+      from: "Crystal Plumbing Website <enquiries@weblaunch.co.nz>",
       to: [to],
       replyTo: payload.email,
       subject: `Website enquiry: ${payload.service}`,

@@ -9,7 +9,7 @@ RESEND_API_KEY=re_your_api_key
 CONTACT_FORM_TO_EMAIL=enquiries@example.com
 ```
 
-`CONTACT_FORM_FROM_EMAIL` is optional. The default sender is `Crystal Plumbing Website <crystal-plumbing@weblaunch.co.nz>`, using the verified `weblaunch.co.nz` Resend domain. Browser submissions are accepted from `https://crystal-plumbing.vercel.app`; localhost origins are accepted only during development.
+Enquiries are sent from `Crystal Plumbing Website <enquiries@weblaunch.co.nz>` using the verified `weblaunch.co.nz` Resend domain. The visitor's submitted email is set as the reply-to address. Browser submissions are accepted from `https://crystal-plumbing.vercel.app`; localhost origins are accepted only during development.
 
 ## Getting Started
 
