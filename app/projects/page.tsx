@@ -4,8 +4,9 @@ import Link from "next/link";
 import PageHero from "../components/PageHero";
 
 export const metadata: Metadata = {
-  title: "Recent Projects | Crystal Plumbing Auckland",
+  title: "Recent Plumbing Projects Auckland",
   description: "Explore recent bathroom, kitchen, hot water and plumbing work completed by Crystal Plumbing across Auckland.",
+  alternates: { canonical: "/projects" },
 };
 
 const projects = [

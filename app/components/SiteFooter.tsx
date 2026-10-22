@@ -14,7 +14,7 @@ export default function SiteFooter() {
       </div>
       <div className="footer-col">
         <p>Navigate</p>
-        <Link href="/">Home</Link><Link href="/services">Services</Link><Link href="/projects">Projects</Link><Link href="/contact">Contact</Link>
+        <Link href="/">Home</Link><Link href="/services">Services</Link><Link href="/projects">Projects</Link><Link href="/contact">Contact</Link><Link href="/privacy-policy">Privacy policy</Link>
       </div>
       <div className="footer-col">
         <p>Services</p>
@@ -22,7 +22,7 @@ export default function SiteFooter() {
         <a href="tel:0276976797">027 697 6797</a>
         <a href="mailto:info@crystalplumbing.co.nz">info@crystalplumbing.co.nz</a>
       </div>
-      <div className="footer-bottom"><span>© 2026 Crystal Plumbing &amp; Gas Ltd</span><span>Certified · Clear · Reliable</span></div>
+      <div className="footer-bottom"><span>© 2026 Crystal Plumbing &amp; Gas Ltd</span><span><Link href="/privacy-policy">Privacy policy</Link> · Certified · Clear · Reliable</span></div>
     </footer>
   );
 }

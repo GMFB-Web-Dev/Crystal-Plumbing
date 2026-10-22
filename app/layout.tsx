@@ -16,9 +16,55 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Crystal Plumbing & Gas | Auckland Plumber",
+  metadataBase: new URL("https://crystalplumbing.co.nz"),
+  title: {
+    default: "Crystal Plumbing & Gas | Auckland Plumber",
+    template: "%s | Crystal Plumbing & Gas",
+  },
   description:
     "Clear, reliable residential plumbing and gas fitting across Auckland. Call James for honest advice and quality workmanship.",
+  applicationName: "Crystal Plumbing & Gas",
+  openGraph: {
+    type: "website",
+    locale: "en_NZ",
+    siteName: "Crystal Plumbing & Gas",
+    title: "Crystal Plumbing & Gas | Auckland Plumber",
+    description:
+      "Clear, reliable residential plumbing and gas fitting across Auckland.",
+    images: [
+      {
+        url: "/images/james-hq.png",
+        width: 1250,
+        height: 1248,
+        alt: "James from Crystal Plumbing beside the Crystal Plumbing van",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Crystal Plumbing & Gas | Auckland Plumber",
+    description: "Clear, reliable plumbing and gas fitting across Auckland.",
+    images: ["/images/james-hq.png"],
+  },
+};
+
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "Plumber",
+  name: "Crystal Plumbing & Gas Ltd",
+  url: "https://crystalplumbing.co.nz",
+  telephone: "+64276976797",
+  email: "info@crystalplumbing.co.nz",
+  image: "https://crystalplumbing.co.nz/images/james-hq.png",
+  areaServed: {
+    "@type": "City",
+    name: "Auckland",
+  },
+  founder: {
+    "@type": "Person",
+    name: "James",
+  },
+  knowsAbout: ["Plumbing", "Gas fitting", "Hot water systems", "Bathroom renovations"],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -29,10 +75,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <a className="skip-link" href="#main-content">Skip to main content</a>
         <SiteHeader />
-        <main>{children}</main>
+        <main id="main-content" tabIndex={-1}>{children}</main>
         <ContactSection />
         <SiteFooter />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema).replace(/</g, "\\u003c") }}
+        />
       </body>
     </html>
   );

@@ -1,6 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { services } from "./site-data";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const Arrow = () => <svg aria-hidden="true" viewBox="0 0 20 20" className="arrow-icon"><path d="M4 10h11M11 5l5 5-5 5" /></svg>;
 
@@ -8,7 +13,7 @@ const proof = [
   ["Certified", "Plumber & gas fitter", "✓"],
   ["Straight-up", "Clear communication", "□"],
   ["On time", "Reliable service", "◷"],
-  ["Auckland-wide", "Local residential work", "⌂"],
+  ["Auckland-wide", "Homes & small businesses", "⌂"],
 ];
 
 const faqs = [
@@ -32,7 +37,11 @@ export default function Home() {
           </div>
         </div>
         <div className="hero-image-wrap">
-          <Image src="/images/james.jpg" fill priority sizes="(max-width: 800px) 100vw, 48vw" alt="James from Crystal Plumbing beside the Crystal Plumbing van" className="hero-image" />
+          <picture>
+            <source media="(max-width: 480px)" srcSet="/images/james.jpg" />
+            {/* The native picture element serves the untouched 625px source on phones and the lossless 2x Figma export on larger screens. */}
+            <img src="/images/james-hq.png" fetchPriority="high" alt="James from Crystal Plumbing beside the Crystal Plumbing van" className="hero-image responsive-hero-image" />
+          </picture>
           <div className="hero-caption"><span>Meet James</span><strong>Your local certified plumber</strong></div>
         </div>
       </section>
