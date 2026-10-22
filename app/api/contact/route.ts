@@ -1,14 +1,8 @@
+import { createHash } from "node:crypto";
 import { Resend } from "resend";
 
 export const runtime = "nodejs";
 
-const productionOrigin = "https://crystal-plumbing.vercel.app";
-const developmentOrigins = new Set([
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "http://127.0.0.1:3000",
-  "http://127.0.0.1:3001",
-]);
 const services = new Set([
   "Plumbing",
   "Gas fitting",
@@ -24,27 +18,58 @@ type ContactPayload = {
   service: string;
   message: string;
   company?: string;
+  requestId: string;
 };
 
-function isAllowedOrigin(origin: string | null) {
+const rateLimitWindowMs = 15 * 60 * 1000;
+const rateLimitMax = 5;
+const recentSubmissions = new Map<string, number[]>();
+
+function isAllowedOrigin(origin: string | null, requestUrl: string) {
   if (!origin) return false;
-  if (origin === productionOrigin) return true;
-  return process.env.NODE_ENV !== "production" && developmentOrigins.has(origin);
+  try {
+    return new URL(origin).origin === new URL(requestUrl).origin;
+  } catch {
+    return false;
+  }
 }
 
-function response(request: Request, body: object, status = 200) {
+function response(request: Request, body: object, status = 200, extraHeaders?: HeadersInit) {
   const origin = request.headers.get("origin");
   const headers = new Headers({
     "Cache-Control": "no-store",
     "Content-Type": "application/json",
     Vary: "Origin",
+    ...extraHeaders,
   });
 
-  if (isAllowedOrigin(origin)) {
+  if (isAllowedOrigin(origin, request.url)) {
     headers.set("Access-Control-Allow-Origin", origin!);
   }
 
   return new Response(JSON.stringify(body), { status, headers });
+}
+
+function getClientId(request: Request) {
+  return request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || request.headers.get("x-real-ip")
+    || "unknown";
+}
+
+function isRateLimited(clientId: string) {
+  const now = Date.now();
+  const cutoff = now - rateLimitWindowMs;
+  const recent = (recentSubmissions.get(clientId) || []).filter((time) => time > cutoff);
+
+  if (recent.length >= rateLimitMax) {
+    recentSubmissions.set(clientId, recent);
+    return true;
+  }
+
+  recent.push(now);
+  recentSubmissions.set(clientId, recent);
+  if (recentSubmissions.size > 1000) recentSubmissions.clear();
+  return false;
 }
 
 function cleanText(value: unknown, maxLength: number) {
@@ -72,15 +97,18 @@ function validatePayload(value: unknown): ContactPayload | null {
   const payload = value as Record<string, unknown>;
   const name = cleanText(payload.name, 100);
   const email = cleanText(payload.email, 254);
-  const phone = typeof payload.phone === "string" ? payload.phone.trim().slice(0, 40) : "";
+  const phone = typeof payload.phone === "string" ? payload.phone.trim() : "";
   const service = cleanText(payload.service, 50);
   const message = cleanText(payload.message, 4000);
   const company = typeof payload.company === "string" ? payload.company.trim() : "";
+  const requestId = cleanText(payload.requestId, 100);
 
-  if (!name || !email || !service || !message || !services.has(service)) return null;
+  if (!name || !email || !service || !message || !requestId || !services.has(service)) return null;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
+  if (phone && (phone.length > 40 || !/^[0-9+()\s-]{7,40}$/.test(phone) || phone.replace(/\D/g, "").length < 7)) return null;
+  if (!/^[0-9a-f-]{36}$/i.test(requestId)) return null;
 
-  return { name, email, phone, service, message, company };
+  return { name, email, phone, service, message, company, requestId };
 }
 
 function buildEmailHtml(payload: ContactPayload) {
@@ -130,7 +158,7 @@ function buildEmailText(payload: ContactPayload) {
 
 export function OPTIONS(request: Request) {
   const origin = request.headers.get("origin");
-  if (!isAllowedOrigin(origin)) {
+  if (!isAllowedOrigin(origin, request.url)) {
     return response(request, { error: "Origin not allowed." }, 403);
   }
 
@@ -147,8 +175,22 @@ export function OPTIONS(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!isAllowedOrigin(request.headers.get("origin"))) {
+  if (!isAllowedOrigin(request.headers.get("origin"), request.url)) {
     return response(request, { error: "Origin not allowed." }, 403);
+  }
+
+  if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
+    return response(request, { error: "Content type must be application/json." }, 415);
+  }
+
+  const clientId = getClientId(request);
+  if (isRateLimited(clientId)) {
+    return response(
+      request,
+      { error: "Too many enquiries were sent from this connection. Please wait 15 minutes or call James." },
+      429,
+      { "Retry-After": "900" },
+    );
   }
 
   const contentLength = Number(request.headers.get("content-length") || 0);
@@ -158,7 +200,11 @@ export async function POST(request: Request) {
 
   let body: unknown;
   try {
-    body = await request.json();
+    const rawBody = await request.text();
+    if (rawBody.length > 20_000) {
+      return response(request, { error: "Request is too large." }, 413);
+    }
+    body = JSON.parse(rawBody);
   } catch {
     return response(request, { error: "Invalid request." }, 400);
   }
@@ -175,6 +221,7 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_FORM_TO_EMAIL;
+  const from = process.env.CONTACT_FORM_FROM_EMAIL || "Crystal Plumbing Website <enquiries@weblaunch.co.nz>";
   if (!apiKey || !to) {
     console.error("Contact form email environment variables are not configured.");
     return response(request, { error: "Email delivery is temporarily unavailable." }, 503);
@@ -182,14 +229,20 @@ export async function POST(request: Request) {
 
   try {
     const resend = new Resend(apiKey);
-    const { error } = await resend.emails.send({
-      from: "Crystal Plumbing Website <enquiries@weblaunch.co.nz>",
-      to: [to],
-      replyTo: payload.email,
-      subject: `Website enquiry: ${payload.service}`,
-      html: buildEmailHtml(payload),
-      text: buildEmailText(payload),
-    });
+    const idempotencyKey = `contact-${createHash("sha256")
+      .update(`${clientId}\n${payload.requestId}\n${payload.email.toLowerCase()}\n${payload.service}\n${payload.message}`)
+      .digest("hex")}`;
+    const { error } = await resend.emails.send(
+      {
+        from,
+        to: [to],
+        replyTo: payload.email,
+        subject: `Website enquiry: ${payload.service}`,
+        html: buildEmailHtml(payload),
+        text: buildEmailText(payload),
+      },
+      { idempotencyKey },
+    );
 
     if (error) {
       console.error("Resend rejected a contact form email:", error.name);

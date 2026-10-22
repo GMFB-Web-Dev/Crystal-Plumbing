@@ -5,8 +5,9 @@ import PageHero from "../components/PageHero";
 import { processSteps, services } from "../site-data";
 
 export const metadata: Metadata = {
-  title: "Plumbing & Gas Services | Crystal Plumbing Auckland",
+  title: "Plumbing & Gas Services Auckland",
   description: "Explore certified plumbing and gas fitting services for Auckland homes and small businesses.",
+  alternates: { canonical: "/services" },
 };
 
 export default function ServicesPage() {

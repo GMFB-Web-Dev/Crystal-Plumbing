@@ -37,6 +37,7 @@ export const services: Service[] = [
       "Hot water systems and ongoing maintenance",
       "Plumbing for hospitality and food service",
       "Water-pressure and filtration solutions",
+      "Drain cleaning and ongoing maintenance",
     ],
   },
   {
@@ -55,6 +56,7 @@ export const services: Service[] = [
       "Oven, cooktop, heater and fireplace installation",
       "Gas leak detection and repairs",
       "Gas line installation and extensions",
+      "Outdoor gas setups for barbecues, patio heaters and spa pools",
       "Safety inspections and compliance certificates",
     ],
     commercial: [
@@ -64,6 +66,7 @@ export const services: Service[] = [
       "Gas safety checks and certification",
       "Urgent gas leak detection and repairs",
       "Extensions to existing commercial gas systems",
+      "Outdoor gas setups for cafés, restaurants and event spaces",
     ],
   },
 ];

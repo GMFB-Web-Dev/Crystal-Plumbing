@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const links = [
   ["Home", "/"],
@@ -16,22 +15,37 @@ const links = [
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("keydown", closeOnEscape);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
   return (
     <div className={`mobile-nav${open ? " is-open" : ""}`}>
       <button
         type="button"
         aria-label={open ? "Close navigation" : "Open navigation"}
         aria-expanded={open}
+        aria-controls="mobile-menu"
         onClick={() => setOpen((value) => !value)}
       >
-        {open ? (
-          <Image src="/images/menu-close.svg" width={18} height={18} alt="" />
-        ) : (
-          <><span /><span /></>
-        )}
+        <span />
+        <span />
       </button>
       {open && (
-        <nav className="mobile-menu" aria-label="Mobile navigation">
+        <nav className="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
           {links.map(([label, href]) => (
             <Link
               href={href}
