@@ -62,8 +62,14 @@ export default function ContactSection() {
         <h2>Tell us what<br />needs sorting.</h2>
         <p>Share a few details and we’ll come back with clear advice, honest timing and the right next step.</p>
         <div className="contact-direct">
-          <a href="tel:0276976797"><span>Call James</span>027 697 6797</a>
-          <a href="mailto:info@crystalplumbing.co.nz"><span>Email</span>info@crystalplumbing.co.nz</a>
+          <a href="tel:0276976797" aria-label="Call James on 027 697 6797">
+            <span><small>Call James</small><strong>027 697 6797</strong></span>
+            <b aria-hidden="true">↗</b>
+          </a>
+          <a href="mailto:info@crystalplumbing.co.nz" aria-label="Email info@crystalplumbing.co.nz">
+            <span><small>Email</small><strong>info@crystalplumbing.co.nz</strong></span>
+            <b aria-hidden="true">↗</b>
+          </a>
         </div>
       </div>
       <form className="contact-form" onSubmit={submitForm} aria-busy={isSending}>
@@ -73,7 +79,7 @@ export default function ContactSection() {
           <label>Email<input name="email" type="email" autoComplete="email" required maxLength={254} placeholder="you@email.com" /></label>
         </div>
         <div className="form-row">
-          <label>Phone<input name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={40} pattern="[0-9+()\s-]{7,40}" placeholder="Your phone number" /></label>
+          <label>Phone<input name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={40} pattern="(?:\d|\s|\+|\(|\)|-){7,40}" placeholder="Your phone number" /></label>
           <label>Service<select name="service" defaultValue="" required><option value="" disabled>What can we help with?</option><option>Plumbing</option><option>Gas fitting</option><option>Hot water</option><option>Renovation or fit-out</option><option>General enquiry</option></select></label>
         </div>
         <label>Project details<textarea name="message" rows={5} required minLength={10} maxLength={4000} placeholder="Tell us a little about the job…" /></label>
