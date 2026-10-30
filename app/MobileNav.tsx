@@ -2,16 +2,16 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { services } from "./site-data";
 
 const links = [
-  ["Home", "/"],
-  ["Services", "/services"],
   ["Projects", "/projects"],
   ["Contact", "/contact"],
 ];
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -44,6 +44,26 @@ export default function MobileNav() {
       </button>
       {open && (
         <nav className="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
+          <Link href="/" onClick={() => setOpen(false)}>Home</Link>
+          <div className="mobile-services-group">
+            <div>
+              <Link href="/services" onClick={() => setOpen(false)}>Services</Link>
+              <button
+                type="button"
+                aria-label={servicesOpen ? "Hide service pages" : "Show service pages"}
+                aria-expanded={servicesOpen}
+                onClick={() => setServicesOpen((value) => !value)}
+              >
+                <span aria-hidden="true">⌄</span>
+              </button>
+            </div>
+            {servicesOpen && (
+              <div className="mobile-services-submenu">
+                <Link href="/services" onClick={() => setOpen(false)}>All services</Link>
+                {services.map((service) => <Link href={service.href} key={service.slug} onClick={() => setOpen(false)}>{service.title}</Link>)}
+              </div>
+            )}
+          </div>
           {links.map(([label, href]) => (
             <Link
               href={href}

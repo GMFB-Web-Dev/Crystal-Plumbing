@@ -103,7 +103,7 @@ function validatePayload(value: unknown): ContactPayload | null {
   const company = typeof payload.company === "string" ? payload.company.trim() : "";
   const requestId = cleanText(payload.requestId, 100);
 
-  if (!name || !email || !service || !message || !requestId || !services.has(service)) return null;
+  if (!name || !email || !service || !message || message.length < 10 || !requestId || !services.has(service)) return null;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
   if (phone && (phone.length > 40 || !/^[0-9+()\s-]{7,40}$/.test(phone) || phone.replace(/\D/g, "").length < 7)) return null;
   if (!/^[0-9a-f-]{36}$/i.test(requestId)) return null;
@@ -220,9 +220,9 @@ export async function POST(request: Request) {
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_FORM_TO_EMAIL;
+  const to = process.env.CONTACT_FORM_TO_EMAIL || "info@crystalplumbing.co.nz";
   const from = process.env.CONTACT_FORM_FROM_EMAIL || "Crystal Plumbing Website <enquiries@weblaunch.co.nz>";
-  if (!apiKey || !to) {
+  if (!apiKey) {
     console.error("Contact form email environment variables are not configured.");
     return response(request, { error: "Email delivery is temporarily unavailable." }, 503);
   }

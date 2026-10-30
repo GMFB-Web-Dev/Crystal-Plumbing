@@ -6,11 +6,11 @@ The sitewide contact form sends enquiries through Resend from the server-side `/
 
 ```bash
 RESEND_API_KEY=re_your_api_key
-CONTACT_FORM_TO_EMAIL=enquiries@example.com
+CONTACT_FORM_TO_EMAIL=info@crystalplumbing.co.nz
 CONTACT_FORM_FROM_EMAIL=Crystal Plumbing Website <enquiries@your-verified-domain.example>
 ```
 
-`CONTACT_FORM_FROM_EMAIL` must use a domain verified in Resend with SPF and DKIM configured. The visitor's submitted email is set as the reply-to address. The handler accepts same-origin browser submissions on the deployed domain, validates every field, rate-limits repeated requests and uses Resend idempotency keys to avoid duplicate delivery.
+`CONTACT_FORM_FROM_EMAIL` must use a domain verified in Resend with SPF and DKIM configured. `CONTACT_FORM_TO_EMAIL` defaults to `info@crystalplumbing.co.nz` when omitted. The visitor's submitted email is set as the reply-to address. The handler accepts same-origin browser submissions on the deployed domain, validates every field, rate-limits repeated requests and uses Resend idempotency keys to avoid duplicate delivery.
 
 ## Google reviews
 

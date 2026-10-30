@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import MobileNav from "../MobileNav";
+import { services } from "../site-data";
 
 const Phone = () => (
   <svg aria-hidden="true" viewBox="0 0 24 24" className="button-icon">
@@ -17,7 +18,16 @@ export default function SiteHeader() {
       </Link>
       <nav className="desktop-nav" aria-label="Main navigation">
         <Link href="/">Home</Link>
-        <Link href="/services">Services</Link>
+        <div className="services-nav-item">
+          <Link className="services-nav-link" href="/services">
+            Services
+            <svg aria-hidden="true" viewBox="0 0 12 8"><path d="m1 1 5 5 5-5" /></svg>
+          </Link>
+          <div className="services-submenu">
+            <Link href="/services">All services</Link>
+            {services.map((service) => <Link href={service.href} key={service.slug}>{service.title}</Link>)}
+          </div>
+        </div>
         <Link href="/projects">Projects</Link>
         <Link href="/contact">Contact</Link>
       </nav>

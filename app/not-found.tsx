@@ -8,7 +8,7 @@ export default function NotFound() {
       <p>The link may be old, but the help you need is still close by.</p>
       <div className="hero-actions">
         <Link className="button primary" href="/">Back to home</Link>
-        <Link className="button secondary" href="/contact">Request a quote</Link>
+        <Link className="button primary" href="/contact">Request a quote</Link>
       </div>
     </section>
   );

@@ -21,7 +21,7 @@ const projects = [
 export default function ProjectsPage() {
   return (
     <>
-      <PageHero eyebrow="Recent work" title="Good work speaks for itself." description="A selection of plumbing, bathroom, kitchen and hot-water projects completed with care across Auckland." image="/images/kitchen-clean.png" imageAlt="A completed modern kitchen fit-out" />
+      <PageHero eyebrow="Recent work" title="Good work speaks for itself." description="A selection of plumbing, bathroom, kitchen and hot-water projects completed with care across Auckland." image="/images/kitchen-clean.png" imageAlt="A completed modern kitchen fit-out" actions={[{ label: "Contact us", href: "/contact" }, { label: "All services", href: "/services" }]} />
       <section className="section project-page-section">
         <div className="section-heading compact-heading"><div><p className="eyebrow">Project gallery</p><h2>Practical work. Polished finish.</h2></div><p>Every project is different, but the standard stays the same: clear planning, tidy work and careful finishing.</p></div>
         <div className="project-page-grid">{projects.map(([image, type, title, description], index) => <article key={title} className={index === 0 || index === 3 ? "project-page-card featured" : "project-page-card"}><div><Image src={image} fill sizes="(max-width: 700px) 100vw, 50vw" alt={title} /></div><span>{type}</span><h2>{title}</h2><p>{description}</p></article>)}</div>

@@ -30,7 +30,7 @@ export default async function ServicePage({ params }: Props) {
 
   return (
     <>
-      <PageHero eyebrow={service.eyebrow} title={`${service.title} services`} description={service.description} image={service.image} imageAlt={service.imageAlt} />
+      <PageHero eyebrow={service.eyebrow} title={`${service.title} services`} description={service.description} image={service.image} imageAlt={service.imageAlt} actions={[{ label: "Contact us", href: "/contact" }, { label: "All services", href: "/services" }]} />
 
       <section className="section service-detail-intro">
         <div><p className="eyebrow">Auckland-wide service</p><h2>{isPlumbing ? "Small fix or full renovation—we’ll get it sorted." : "Safe gas work, clearly explained and certified."}</h2></div>

@@ -48,7 +48,7 @@ export default async function Home() {
           <p className="hero-intro">Straight-up plumbing and gas services from a certified local tradesman. Done properly, communicated clearly and made easy from start to finish.</p>
           <div className="hero-actions">
             <Link className="button primary" href="/contact">Get a free quote <Arrow /></Link>
-            <Link className="button secondary" href="/services">Explore services <Arrow /></Link>
+            <Link className="button primary" href="/services">Explore services <Arrow /></Link>
           </div>
         </div>
         <div className="hero-image-wrap">
@@ -68,7 +68,7 @@ export default async function Home() {
       <section className="section services home-services">
         <div className="section-heading">
           <div><p className="eyebrow">What we do</p><h2>Two trades.<br />One clear standard.</h2></div>
-          <div className="heading-side"><p>Choose the service you need for the full list of residential and commercial solutions.</p><Link className="text-link dark" href="/services">View all services <Arrow /></Link></div>
+          <div className="heading-side"><p>Choose the service you need for the full list of residential and commercial solutions.</p><Link className="button primary" href="/services">View all services <Arrow /></Link></div>
         </div>
         <div className="home-service-grid">
           {services.map((service, index) => (
@@ -80,7 +80,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="about">
+      <section className="about" id="about">
         <div className="about-images">
           <div className="about-main"><Image src="/images/van.jpg" fill sizes="(max-width: 800px) 100vw, 48vw" alt="Crystal Plumbing service van" /></div>
           <div className="about-detail"><Image src="/images/basin.jpg" fill sizes="220px" alt="Modern basin installed by Crystal Plumbing" /></div>

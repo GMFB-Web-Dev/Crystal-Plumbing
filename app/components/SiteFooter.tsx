@@ -7,7 +7,7 @@ export default function SiteFooter() {
     <footer>
       <div className="footer-brand">
         <Link className="brand brand-light" href="/">
-          <Image src="/images/crystal-mark.png" width={52} height={54} alt="" />
+          <Image src="/images/crystal-mark.png" width={78} height={81} alt="" />
           <span className="brand-words"><strong>Crystal</strong><small>Plumbing &amp; Gas</small></span>
         </Link>
         <p>Clear plumbing and gas services<br />done right across Auckland.</p>

@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FormEvent, useRef, useState } from "react";
 
 export default function ContactSection() {
+  const pathname = usePathname();
+  const isContactPage = pathname === "/contact";
   const [status, setStatus] = useState<{ message: string; type: "idle" | "success" | "error" }>({
     message: "",
     type: "idle",
@@ -56,7 +59,7 @@ export default function ContactSection() {
   }
 
   return (
-    <section className="contact-form-section" id="quote">
+    <section className={`contact-form-section${isContactPage ? " contact-page-form" : ""}`} id="quote">
       <div className="contact-form-intro">
         <p className="eyebrow light">Ready when you are</p>
         <h2>Tell us what<br />needs sorting.</h2>

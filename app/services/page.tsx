@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <>
-      <PageHero eyebrow="Crystal-clear services" title="Practical solutions, done properly." description="From everyday repairs to renovations, hot water and certified gas work, we make the whole process straightforward." image="/images/van.jpg" imageAlt="Crystal Plumbing service van in Auckland" />
+      <PageHero eyebrow="Crystal-clear services" title="Practical solutions, done properly." description="From everyday repairs to renovations, hot water and certified gas work, we make the whole process straightforward." image="/images/van.jpg" imageAlt="Crystal Plumbing service van in Auckland" actions={[{ label: "Contact us", href: "/contact" }, { label: "About us", href: "/#about" }]} />
 
       <section className="section route-services">
         <div className="section-heading compact-heading"><div><p className="eyebrow">Choose a service</p><h2>How can we help?</h2></div><p>Open a service to see the full scope of residential and commercial work we handle.</p></div>
