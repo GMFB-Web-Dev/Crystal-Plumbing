@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 const links = [
   ["Home", "/"],
   ["Services", "/services"],
-  ["— Plumbing", "/services/plumbing"],
-  ["— Gas fitting", "/services/gas-fitting"],
   ["Projects", "/projects"],
   ["Contact", "/contact"],
 ];
@@ -50,7 +48,6 @@ export default function MobileNav() {
             <Link
               href={href}
               key={href}
-              className={label.startsWith("—") ? "mobile-sub-link" : undefined}
               onClick={() => setOpen(false)}
             >
               {label}
