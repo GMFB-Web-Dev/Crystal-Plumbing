@@ -139,7 +139,7 @@ export default function ReviewsCarousel({
       </div>
 
       <p className="reviews-attribution">
-        Reviews are provided by Google and shown in Google’s relevance order.
+        Five-star reviews provided by Google, shown newest first.
       </p>
     </div>
   );

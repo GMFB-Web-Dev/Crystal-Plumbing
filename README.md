@@ -21,7 +21,7 @@ GOOGLE_PLACES_API_KEY=your_google_places_api_key
 GOOGLE_PLACE_ID=your_google_place_id
 ```
 
-The API key is read only on the server and is not exposed to browser JavaScript. Live Place Details data is cached and refreshed every six hours. If Google is unavailable or the configuration is missing, the verified fallback reviews remain visible.
+The API key is read only on the server and is not exposed to browser JavaScript. Live Place Details data is cached and refreshed every six hours. Testimonials are limited to exact five-star reviews and sorted newest-first using Google review publish timestamps. Places API (New) returns at most five reviews in its relevance-selected response, so a complete newest-first list requires authenticated Google Business Profile access. If Google is unavailable or the configuration is missing, the verified fallback reviews remain visible in newest-first order.
 
 ## Getting Started
 

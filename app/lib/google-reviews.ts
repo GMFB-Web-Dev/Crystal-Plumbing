@@ -7,6 +7,7 @@ export type GoogleReview = {
   authorPhotoUri?: string;
   text: string;
   rating: number;
+  publishTime?: string;
   relativePublishTimeDescription?: string;
   googleMapsUri: string;
 };
@@ -27,10 +28,24 @@ const fallbackReviews: GoogleReview[] = [
     googleMapsUri: GOOGLE_REVIEWS_URL,
   },
   {
+    authorName: "AJ Blair",
+    text: "Thank you James for your part in transforming my bathroom. Your attention to detail and work is truly appreciated!",
+    rating: 5,
+    relativePublishTimeDescription: "3 months ago",
+    googleMapsUri: GOOGLE_REVIEWS_URL,
+  },
+  {
     authorName: "Jeremy Hava",
     text: "James is amazing! Very reliable, great communication and cares a lot about his work! Will only be using Crystal Plumbing moving forward. Highly recommended!",
     rating: 5,
     relativePublishTimeDescription: "4 months ago",
+    googleMapsUri: GOOGLE_REVIEWS_URL,
+  },
+  {
+    authorName: "Naomi Reynolds",
+    text: "James did a great job replacing my leaking shower. Looks great and left the place clean and tidy. Would recommend!",
+    rating: 5,
+    relativePublishTimeDescription: "5 months ago",
     googleMapsUri: GOOGLE_REVIEWS_URL,
   },
   {
@@ -48,20 +63,6 @@ const fallbackReviews: GoogleReview[] = [
     googleMapsUri: GOOGLE_REVIEWS_URL,
   },
   {
-    authorName: "Naomi Reynolds",
-    text: "James did a great job replacing my leaking shower. Looks great and left the place clean and tidy. Would recommend!",
-    rating: 5,
-    relativePublishTimeDescription: "5 months ago",
-    googleMapsUri: GOOGLE_REVIEWS_URL,
-  },
-  {
-    authorName: "AJ Blair",
-    text: "Thank you James for your part in transforming my bathroom. Your attention to detail and work is truly appreciated!",
-    rating: 5,
-    relativePublishTimeDescription: "3 months ago",
-    googleMapsUri: GOOGLE_REVIEWS_URL,
-  },
-  {
     authorName: "Samuel Lawson",
     text: "Highly recommend James. He expertly fit out our kitchen and bathroom. Super efficient and tidy. We are very happy with the result!",
     rating: 5,
@@ -76,6 +77,7 @@ type PlacesResponse = {
   googleMapsUri?: string;
   reviews?: Array<{
     rating?: number;
+    publishTime?: string;
     relativePublishTimeDescription?: string;
     googleMapsUri?: string;
     text?: { text?: string };
@@ -86,6 +88,17 @@ type PlacesResponse = {
     };
   }>;
 };
+
+function newestFiveStarReviews(reviews: GoogleReview[]) {
+  return reviews
+    .filter((review) => review.rating === 5)
+    .sort((first, second) => {
+      const firstPublished = first.publishTime ? Date.parse(first.publishTime) : 0;
+      const secondPublished = second.publishTime ? Date.parse(second.publishTime) : 0;
+
+      return secondPublished - firstPublished;
+    });
+}
 
 export async function getGoogleReviews(): Promise<GoogleReviewsResult> {
   const apiKey = process.env.GOOGLE_PLACES_API_KEY;
@@ -125,7 +138,8 @@ export async function getGoogleReviews(): Promise<GoogleReviewsResult> {
           authorUri: review.authorAttribution?.uri,
           authorPhotoUri: review.authorAttribution?.photoUri,
           text,
-          rating: review.rating ?? 5,
+          rating: review.rating ?? 0,
+          publishTime: review.publishTime,
           relativePublishTimeDescription:
             review.relativePublishTimeDescription,
           googleMapsUri:
@@ -133,15 +147,16 @@ export async function getGoogleReviews(): Promise<GoogleReviewsResult> {
         };
       })
       .filter((review): review is GoogleReview => review !== null);
+    const fiveStarReviews = newestFiveStarReviews(reviews);
 
-    if (reviews.length === 0) {
-      throw new Error("Google Places returned no readable reviews");
+    if (fiveStarReviews.length === 0) {
+      throw new Error("Google Places returned no readable five-star reviews");
     }
 
     return {
-      reviews,
+      reviews: fiveStarReviews,
       rating: data.rating ?? 5,
-      reviewCount: data.userRatingCount ?? reviews.length,
+      reviewCount: data.userRatingCount ?? fiveStarReviews.length,
       isLive: true,
     };
   } catch (error) {
