@@ -10,18 +10,18 @@ export const metadata: Metadata = {
 };
 
 const projects = [
-  ["/images/shower.jpg", "Bathroom fit-out", "Brass detail shower", "A modern shower installation with clean tile work and carefully aligned brass fittings."],
-  ["/images/kitchen-clean.png", "Kitchen plumbing", "Full renovation fit-out", "Complete kitchen plumbing prepared and finished as part of a bright residential renovation."],
-  ["/images/hot-water.jpg", "Hot water", "Efficient system upgrade", "A modern, efficient hot-water system installed with tidy pipework and easy service access."],
-  ["/images/bathroom.jpg", "Bathroom renovation", "Clean modern finish", "A compact bathroom transformed with crisp fixtures, warm timber and a thoughtful layout."],
-  ["/images/basin.jpg", "Bathroom plumbing", "Wall-mounted brassware", "A refined basin installation with concealed plumbing and carefully positioned brass fittings."],
-  ["/images/van.jpg", "Auckland-wide", "Ready for the next job", "Residential and light-commercial plumbing and gas fitting across the Auckland region."],
+  ["/images/projects/brass-detail-shower.png", "Bathroom fit-out", "Brass detail shower", "A modern shower installation with clean tile work and carefully aligned brass fittings."],
+  ["/images/projects/full-renovation-fit-out.png", "Kitchen plumbing", "Full renovation fit-out", "Complete kitchen plumbing prepared and finished as part of a bright residential renovation."],
+  ["/images/projects/efficient-system-upgrade.png", "Hot water", "Efficient system upgrade", "A modern, efficient hot-water system installed with tidy pipework and easy service access."],
+  ["/images/projects/clean-modern-finish.png", "Bathroom renovation", "Clean modern finish", "A compact bathroom transformed with crisp fixtures, warm timber and a thoughtful layout."],
+  ["/images/projects/wall-mounted-brassware.png", "Bathroom plumbing", "Wall-mounted brassware", "A refined basin installation with concealed plumbing and carefully positioned brass fittings."],
+  ["/images/projects/ready-for-next-job.png", "Auckland-wide", "Ready for the next job", "Residential and light-commercial plumbing and gas fitting across the Auckland region."],
 ];
 
 export default function ProjectsPage() {
   return (
     <>
-      <PageHero eyebrow="Recent work" title="Good work speaks for itself." description="A selection of plumbing, bathroom, kitchen and hot-water projects completed with care across Auckland." image="/images/kitchen-clean.png" imageAlt="A completed modern kitchen fit-out" actions={[{ label: "Contact us", href: "/contact" }, { label: "All services", href: "/services" }]} />
+      <PageHero eyebrow="Recent work" title="Good work speaks for itself." description="A selection of plumbing, bathroom, kitchen and hot-water projects completed with care across Auckland." image="/images/projects/hero.png" imageAlt="A completed modern bathroom fit-out" actions={[{ label: "Contact us", href: "/contact" }, { label: "All services", href: "/services" }]} />
       <section className="section project-page-section">
         <div className="section-heading compact-heading"><div><p className="eyebrow">Project gallery</p><h2>Practical work. Polished finish.</h2></div><p>Every project is different, but the standard stays the same: clear planning, tidy work and careful finishing.</p></div>
         <div className="project-page-grid">{projects.map(([image, type, title, description], index) => <article key={title} className={index === 0 || index === 3 ? "project-page-card featured" : "project-page-card"}><div><Image src={image} fill sizes="(max-width: 700px) 100vw, 50vw" alt={title} /></div><span>{type}</span><h2>{title}</h2><p>{description}</p></article>)}</div>

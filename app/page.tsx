@@ -52,11 +52,7 @@ export default async function Home() {
           </div>
         </div>
         <div className="hero-image-wrap">
-          <picture>
-            <source media="(max-width: 480px)" srcSet="/images/james.jpg" />
-            {/* The native picture element serves the untouched 625px source on phones and the lossless 2x Figma export on larger screens. */}
-            <img src="/images/james-hq.png" fetchPriority="high" alt="James from Crystal Plumbing beside the Crystal Plumbing van" className="hero-image responsive-hero-image" />
-          </picture>
+          <Image src="/images/home/hero.png" fill preload sizes="(max-width: 800px) 100vw, 48vw" alt="James from Crystal Plumbing beside the Crystal Plumbing van" className="hero-image responsive-hero-image" />
           <div className="hero-caption"><span>Meet James</span><strong>Your local certified plumber</strong></div>
         </div>
       </section>
@@ -73,7 +69,7 @@ export default async function Home() {
         <div className="home-service-grid">
           {services.map((service, index) => (
             <Link className="home-service-card" href={service.href} key={service.slug}>
-              <Image src={service.image} fill sizes="(max-width: 800px) 100vw, 50vw" alt={service.imageAlt} />
+              <Image src={service.homeImage} fill sizes="(max-width: 800px) 100vw, 50vw" alt={service.imageAlt} />
               <div className="home-service-overlay"><span>0{index + 1} · {service.eyebrow}</span><h3>{service.title}</h3><p>{service.short}</p><b>Explore service <Arrow /></b></div>
             </Link>
           ))}
@@ -82,8 +78,8 @@ export default async function Home() {
 
       <section className="about" id="about">
         <div className="about-images">
-          <div className="about-main"><Image src="/images/van.jpg" fill sizes="(max-width: 800px) 100vw, 48vw" alt="Crystal Plumbing service van" /></div>
-          <div className="about-detail"><Image src="/images/basin.jpg" fill sizes="220px" alt="Modern basin installed by Crystal Plumbing" /></div>
+          <div className="about-main"><Image src="/images/home/about-van.png" fill sizes="(max-width: 800px) 100vw, 48vw" alt="Crystal Plumbing service van" /></div>
+          <div className="about-detail"><Image src="/images/home/about-basin.png" fill sizes="220px" alt="Modern basin installed by Crystal Plumbing" /></div>
           <div className="since"><strong>2023</strong><span>Serving<br />Auckland</span></div>
         </div>
         <div className="about-copy">
@@ -101,10 +97,10 @@ export default async function Home() {
           <div className="heading-side"><p>Bathroom, kitchen and hot-water work completed across Auckland homes.</p><Link className="button primary" href="/projects">View our projects <Arrow /></Link></div>
         </div>
         <div className="project-grid">
-          <figure className="project project-tall"><Image src="/images/shower.jpg" fill sizes="(max-width: 720px) 100vw, 32vw" alt="Modern brass shower installation" /><figcaption><span>Bathroom fit-out</span><strong>Brass detail shower</strong></figcaption></figure>
-          <figure className="project project-wide"><Image src="/images/kitchen-clean.png" fill sizes="(max-width: 720px) 100vw, 54vw" alt="Bright modern kitchen plumbing fit-out" /><figcaption><span>Kitchen plumbing</span><strong>Full renovation fit-out</strong></figcaption></figure>
-          <figure className="project"><Image src="/images/hot-water.jpg" fill sizes="(max-width: 720px) 100vw, 27vw" alt="Efficient hot water system" /><figcaption><span>Hot water</span><strong>Efficient system upgrade</strong></figcaption></figure>
-          <figure className="project"><Image src="/images/bathroom.jpg" fill sizes="(max-width: 720px) 100vw, 27vw" alt="Finished contemporary bathroom" /><figcaption><span>Bathroom renovation</span><strong>Clean modern finish</strong></figcaption></figure>
+          <figure className="project project-tall"><Image src="/images/home/brass-detail-shower.png" fill sizes="(max-width: 720px) 100vw, 32vw" alt="Modern brass shower installation" /><figcaption><span>Bathroom fit-out</span><strong>Brass detail shower</strong></figcaption></figure>
+          <figure className="project project-wide"><Image src="/images/home/full-renovation-fit-out.png" fill sizes="(max-width: 720px) 100vw, 54vw" alt="Bright modern kitchen plumbing fit-out" /><figcaption><span>Kitchen plumbing</span><strong>Full renovation fit-out</strong></figcaption></figure>
+          <figure className="project"><Image src="/images/home/efficient-system-upgrade.png" fill sizes="(max-width: 720px) 100vw, 27vw" alt="Efficient hot water system" /><figcaption><span>Hot water</span><strong>Efficient system upgrade</strong></figcaption></figure>
+          <figure className="project"><Image src="/images/home/clean-modern-finish.png" fill sizes="(max-width: 720px) 100vw, 27vw" alt="Finished contemporary bathroom" /><figcaption><span>Bathroom renovation</span><strong>Clean modern finish</strong></figcaption></figure>
         </div>
       </section>
 

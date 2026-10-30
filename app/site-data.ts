@@ -5,8 +5,12 @@ export type Service = {
   short: string;
   description: string;
   href: string;
-  image: string;
+  homeImage: string;
+  overviewImage: string;
+  heroImage: string;
+  featureImage: string;
   imageAlt: string;
+  featureImageAlt: string;
   residential: string[];
   commercial: string[];
 };
@@ -20,8 +24,12 @@ export const services: Service[] = [
     description:
       "Reliable, straightforward plumbing for Auckland homes and small businesses. From a leaking tap to a full renovation, every job comes with a clear plan, careful workmanship and no surprises.",
     href: "/services/plumbing",
-    image: "/images/shower.jpg",
+    homeImage: "/images/home/plumbing.png",
+    overviewImage: "/images/services/plumbing.png",
+    heroImage: "/images/plumbing/hero.png",
+    featureImage: "/images/plumbing/quality-finish.png",
     imageAlt: "Modern brass shower installed by Crystal Plumbing",
+    featureImageAlt: "Completed bathroom plumbing project with a freestanding bath",
     residential: [
       "Kitchen, bathroom and laundry plumbing",
       "Hot water cylinder installation and upgrades",
@@ -48,8 +56,12 @@ export const services: Service[] = [
     description:
       "Certified gas fitting for homes, cafés, shops and small businesses. We handle installations, upgrades, repairs and safety checks with clear communication at every step.",
     href: "/services/gas-fitting",
-    image: "/images/hot-water.jpg",
+    homeImage: "/images/home/gas-fitting.png",
+    overviewImage: "/images/services/gas-fitting.png",
+    heroImage: "/images/gas-fitting/hero.png",
+    featureImage: "/images/gas-fitting/quality-finish.png",
     imageAlt: "Efficient hot water system installed by Crystal Plumbing",
+    featureImageAlt: "Quality hot water cylinder installation with tidy pipework",
     residential: [
       "Gas hot water installation and upgrades",
       "Switching from electric to gas, including LPG",

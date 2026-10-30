@@ -30,7 +30,7 @@ export default async function ServicePage({ params }: Props) {
 
   return (
     <>
-      <PageHero eyebrow={service.eyebrow} title={`${service.title} services`} description={service.description} image={service.image} imageAlt={service.imageAlt} actions={[{ label: "Contact us", href: "/contact" }, { label: "All services", href: "/services" }]} />
+      <PageHero eyebrow={service.eyebrow} title={`${service.title} services`} description={service.description} image={service.heroImage} imageAlt={service.imageAlt} actions={[{ label: "Contact us", href: "/contact" }, { label: "All services", href: "/services" }]} />
 
       <section className="section service-detail-intro">
         <div><p className="eyebrow">Auckland-wide service</p><h2>{isPlumbing ? "Small fix or full renovation—we’ll get it sorted." : "Safe gas work, clearly explained and certified."}</h2></div>
@@ -43,7 +43,7 @@ export default async function ServicePage({ params }: Props) {
       </section>
 
       <section className="service-feature">
-        <div className="service-feature-image"><Image src={isPlumbing ? "/images/bathroom.jpg" : "/images/james-hq.png"} fill sizes="(max-width: 800px) 100vw, 50vw" alt={isPlumbing ? "Completed bathroom plumbing project" : "James from Crystal Plumbing"} /></div>
+        <div className="service-feature-image"><Image src={service.featureImage} fill sizes="(max-width: 800px) 100vw, 50vw" alt={service.featureImageAlt} /></div>
         <div className="service-feature-copy"><p className="eyebrow light">Why Crystal</p><h2>Clear scope.<br />Quality finish.</h2><p>We explain the options, agree the work before starting and keep you updated until the final check. No hidden costs or confusing trade talk.</p><ul><li>Certified and compliant work</li><li>Upfront, easy-to-follow quotes</li><li>Respectful service in your home or business</li><li>One point of contact from start to finish</li></ul></div>
       </section>
 

@@ -33,9 +33,9 @@ export const metadata: Metadata = {
       "Clear, reliable residential plumbing and gas fitting across Auckland.",
     images: [
       {
-        url: "/images/james-hq.png",
-        width: 1250,
-        height: 1248,
+        url: "/images/home/hero.png",
+        width: 1261,
+        height: 1247,
         alt: "James from Crystal Plumbing beside the Crystal Plumbing van",
       },
     ],
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Crystal Plumbing & Gas | Auckland Plumber",
     description: "Clear, reliable plumbing and gas fitting across Auckland.",
-    images: ["/images/james-hq.png"],
+    images: ["/images/home/hero.png"],
   },
 };
 
@@ -55,7 +55,7 @@ const localBusinessSchema = {
   url: "https://crystalplumbing.co.nz",
   telephone: "+64276976797",
   email: "info@crystalplumbing.co.nz",
-  image: "https://crystalplumbing.co.nz/images/james-hq.png",
+  image: "https://crystalplumbing.co.nz/images/home/hero.png",
   areaServed: {
     "@type": "City",
     name: "Auckland",
