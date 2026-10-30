@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import ReviewsCarousel from "./components/ReviewsCarousel";
 import { getGoogleReviews, GOOGLE_REVIEWS_URL } from "./lib/google-reviews";
 import { services } from "./site-data";
@@ -36,6 +37,7 @@ const faqs = [
 ];
 
 export default async function Home() {
+  await connection();
   const googleReviews = await getGoogleReviews();
 
   return (

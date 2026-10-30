@@ -51,6 +51,17 @@ export default function ReviewsCarousel({
     return () => window.clearInterval(timer);
   }, [manuallyPaused, interactionPaused, reducedMotion, reviews.length]);
 
+  if (reviews.length === 0) {
+    return (
+      <div className="reviews-carousel reviews-unavailable">
+        <p>Our latest reviews are available on Google.</p>
+        <a className="button primary" href={reviewsUrl} target="_blank" rel="noreferrer">
+          Read Google reviews <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div
       className="reviews-carousel"
@@ -139,7 +150,7 @@ export default function ReviewsCarousel({
       </div>
 
       <p className="reviews-attribution">
-        Five-star reviews provided by Google, shown newest first.
+        Latest five-star reviews provided by Google.
       </p>
     </div>
   );

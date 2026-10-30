@@ -19,74 +19,23 @@ export type GoogleReviewsResult = {
   isLive: boolean;
 };
 
-const fallbackReviews: GoogleReview[] = [
-  {
-    authorName: "Peter Mills",
-    text: "Excellent service and workmanship. James did a fantastic job at my property — professional, reliable and very tidy. The work was completed to a high standard and I wouldn’t hesitate to recommend him.",
-    rating: 5,
-    relativePublishTimeDescription: "a month ago",
-    googleMapsUri: GOOGLE_REVIEWS_URL,
-  },
-  {
-    authorName: "AJ Blair",
-    text: "Thank you James for your part in transforming my bathroom. Your attention to detail and work is truly appreciated!",
-    rating: 5,
-    relativePublishTimeDescription: "3 months ago",
-    googleMapsUri: GOOGLE_REVIEWS_URL,
-  },
-  {
-    authorName: "Jeremy Hava",
-    text: "James is amazing! Very reliable, great communication and cares a lot about his work! Will only be using Crystal Plumbing moving forward. Highly recommended!",
-    rating: 5,
-    relativePublishTimeDescription: "4 months ago",
-    googleMapsUri: GOOGLE_REVIEWS_URL,
-  },
-  {
-    authorName: "Naomi Reynolds",
-    text: "James did a great job replacing my leaking shower. Looks great and left the place clean and tidy. Would recommend!",
-    rating: 5,
-    relativePublishTimeDescription: "5 months ago",
-    googleMapsUri: GOOGLE_REVIEWS_URL,
-  },
-  {
-    authorName: "Sherry Chu",
-    text: "James is super efficient and reliable. As a family newly moved to Auckland, he has helped us a great deal. Highly recommend!",
-    rating: 5,
-    relativePublishTimeDescription: "7 months ago",
-    googleMapsUri: GOOGLE_REVIEWS_URL,
-  },
-  {
-    authorName: "Lynne Abbot",
-    text: "James is a reliable, skilled, efficient, tidy plumber who is great to deal with. I am very grateful to have found him to facilitate a stress-free plumbing upgrade of my laundry. Totally recommend his services.",
-    rating: 5,
-    relativePublishTimeDescription: "9 months ago",
-    googleMapsUri: GOOGLE_REVIEWS_URL,
-  },
-  {
-    authorName: "Samuel Lawson",
-    text: "Highly recommend James. He expertly fit out our kitchen and bathroom. Super efficient and tidy. We are very happy with the result!",
-    rating: 5,
-    relativePublishTimeDescription: "10 months ago",
-    googleMapsUri: GOOGLE_REVIEWS_URL,
-  },
-];
-
 type PlacesResponse = {
-  rating?: number;
-  userRatingCount?: number;
-  googleMapsUri?: string;
-  reviews?: Array<{
+  status?: string;
+  error_message?: string;
+  result?: {
     rating?: number;
-    publishTime?: string;
-    relativePublishTimeDescription?: string;
-    googleMapsUri?: string;
-    text?: { text?: string };
-    authorAttribution?: {
-      displayName?: string;
-      uri?: string;
-      photoUri?: string;
-    };
-  }>;
+    user_ratings_total?: number;
+    url?: string;
+    reviews?: Array<{
+      author_name?: string;
+      author_url?: string;
+      profile_photo_url?: string;
+      rating?: number;
+      relative_time_description?: string;
+      text?: string;
+      time?: number;
+    }>;
+  };
 };
 
 function newestFiveStarReviews(reviews: GoogleReview[]) {
@@ -97,7 +46,8 @@ function newestFiveStarReviews(reviews: GoogleReview[]) {
       const secondPublished = second.publishTime ? Date.parse(second.publishTime) : 0;
 
       return secondPublished - firstPublished;
-    });
+    })
+    .slice(0, 5);
 }
 
 export async function getGoogleReviews(): Promise<GoogleReviewsResult> {
@@ -105,20 +55,19 @@ export async function getGoogleReviews(): Promise<GoogleReviewsResult> {
   const placeId = process.env.GOOGLE_PLACE_ID;
 
   if (!apiKey || !placeId) {
-    return { reviews: fallbackReviews, rating: 5, reviewCount: 23, isLive: false };
+    return { reviews: [], rating: 0, reviewCount: 0, isLive: false };
   }
 
   try {
+    const query = new URLSearchParams({
+      place_id: placeId,
+      fields: "rating,user_ratings_total,reviews,url",
+      reviews_sort: "newest",
+      key: apiKey,
+    });
     const response = await fetch(
-      `https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`,
-      {
-        headers: {
-          "X-Goog-Api-Key": apiKey,
-          "X-Goog-FieldMask":
-            "rating,userRatingCount,reviews,googleMapsUri",
-        },
-        next: { revalidate: 21600, tags: ["google-reviews"] },
-      },
+      `https://maps.googleapis.com/maps/api/place/details/json?${query}`,
+      { cache: "no-store" },
     );
 
     if (!response.ok) {
@@ -126,24 +75,28 @@ export async function getGoogleReviews(): Promise<GoogleReviewsResult> {
     }
 
     const data = (await response.json()) as PlacesResponse;
-    const reviews = (data.reviews ?? [])
+    if (data.status !== "OK") {
+      throw new Error(`Google Places returned ${data.status ?? "an unknown status"}`);
+    }
+
+    const reviews = (data.result?.reviews ?? [])
       .map((review): GoogleReview | null => {
-        const text = review.text?.text?.trim();
-        const authorName = review.authorAttribution?.displayName?.trim();
+        const text = review.text?.trim();
+        const authorName = review.author_name?.trim();
 
         if (!text || !authorName) return null;
 
         return {
           authorName,
-          authorUri: review.authorAttribution?.uri,
-          authorPhotoUri: review.authorAttribution?.photoUri,
+          authorUri: review.author_url,
+          authorPhotoUri: review.profile_photo_url,
           text,
           rating: review.rating ?? 0,
-          publishTime: review.publishTime,
-          relativePublishTimeDescription:
-            review.relativePublishTimeDescription,
-          googleMapsUri:
-            review.googleMapsUri ?? data.googleMapsUri ?? GOOGLE_REVIEWS_URL,
+          publishTime: review.time
+            ? new Date(review.time * 1000).toISOString()
+            : undefined,
+          relativePublishTimeDescription: review.relative_time_description,
+          googleMapsUri: data.result?.url ?? GOOGLE_REVIEWS_URL,
         };
       })
       .filter((review): review is GoogleReview => review !== null);
@@ -155,12 +108,12 @@ export async function getGoogleReviews(): Promise<GoogleReviewsResult> {
 
     return {
       reviews: fiveStarReviews,
-      rating: data.rating ?? 5,
-      reviewCount: data.userRatingCount ?? fiveStarReviews.length,
+      rating: data.result?.rating ?? 5,
+      reviewCount: data.result?.user_ratings_total ?? fiveStarReviews.length,
       isLive: true,
     };
   } catch (error) {
-    console.error("Unable to refresh Google reviews; using verified fallback.", error);
-    return { reviews: fallbackReviews, rating: 5, reviewCount: 23, isLive: false };
+    console.error("Unable to load the latest Google reviews.", error);
+    return { reviews: [], rating: 0, reviewCount: 0, isLive: false };
   }
 }

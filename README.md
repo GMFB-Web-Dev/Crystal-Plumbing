@@ -14,14 +14,14 @@ CONTACT_FORM_FROM_EMAIL=Crystal Plumbing Website <enquiries@your-verified-domain
 
 ## Google reviews
 
-The homepage includes seven verified Google review fallbacks, so the carousel works without external configuration. To automatically refresh it from Google Places, enable the Places API (New) in Google Cloud and add these server-only environment variables in Vercel:
+The homepage requests the latest reviews from Google whenever a visitor loads the page. Enable the Places API used by Place Details in Google Cloud and add these server-only environment variables in Vercel:
 
 ```bash
 GOOGLE_PLACES_API_KEY=your_google_places_api_key
 GOOGLE_PLACE_ID=your_google_place_id
 ```
 
-The API key is read only on the server and is not exposed to browser JavaScript. Live Place Details data is cached and refreshed every six hours. Testimonials are limited to exact five-star reviews and sorted newest-first using Google review publish timestamps. Places API (New) returns at most five reviews in its relevance-selected response, so a complete newest-first list requires authenticated Google Business Profile access. If Google is unavailable or the configuration is missing, the verified fallback reviews remain visible in newest-first order.
+The API key is read only on the server and is not exposed to browser JavaScript. Each page request makes an uncached Place Details call with `reviews_sort=newest`. Testimonials are filtered to exact five-star reviews, sorted by Google review time and limited to five. There are no hardcoded review fallbacks; if Google is unavailable or configuration is missing, visitors are shown a direct link to the Google reviews page instead of stale testimonial content.
 
 ## Getting Started
 
