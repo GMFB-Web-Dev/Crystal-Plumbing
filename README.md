@@ -12,6 +12,17 @@ CONTACT_FORM_FROM_EMAIL=Crystal Plumbing Website <enquiries@your-verified-domain
 
 `CONTACT_FORM_FROM_EMAIL` must use a domain verified in Resend with SPF and DKIM configured. The visitor's submitted email is set as the reply-to address. The handler accepts same-origin browser submissions on the deployed domain, validates every field, rate-limits repeated requests and uses Resend idempotency keys to avoid duplicate delivery.
 
+## Google reviews
+
+The homepage includes seven verified Google review fallbacks, so the carousel works without external configuration. To automatically refresh it from Google Places, enable the Places API (New) in Google Cloud and add these server-only environment variables in Vercel:
+
+```bash
+GOOGLE_PLACES_API_KEY=your_google_places_api_key
+GOOGLE_PLACE_ID=your_google_place_id
+```
+
+The API key is read only on the server and is not exposed to browser JavaScript. Live Place Details data is cached and refreshed every six hours. If Google is unavailable or the configuration is missing, the verified fallback reviews remain visible.
+
 ## Getting Started
 
 First, run the development server:

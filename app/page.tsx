@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import ReviewsCarousel from "./components/ReviewsCarousel";
+import { getGoogleReviews, GOOGLE_REVIEWS_URL } from "./lib/google-reviews";
 import { services } from "./site-data";
 
 export const metadata: Metadata = {
@@ -9,11 +11,22 @@ export const metadata: Metadata = {
 
 const Arrow = () => <svg aria-hidden="true" viewBox="0 0 20 20" className="arrow-icon"><path d="M4 10h11M11 5l5 5-5 5" /></svg>;
 
+const ProofIcon = ({ name }: { name: string }) => {
+  const paths: Record<string, React.ReactNode> = {
+    certified: <><path d="M10 2.2 16 4.8v4.3c0 4-2.4 7.1-6 8.7-3.6-1.6-6-4.7-6-8.7V4.8L10 2.2Z" /><path d="m7.1 9.8 1.9 1.9 4-4" /></>,
+    communication: <><path d="M3 4.5h14v9H9l-4.2 3v-3H3v-9Z" /><path d="M6.5 8h7M6.5 10.8h4.5" /></>,
+    time: <><circle cx="10" cy="10" r="7.2" /><path d="M10 6v4.4l3 1.8" /></>,
+    location: <><path d="M16 8.6c0 4.5-6 9-6 9s-6-4.5-6-9a6 6 0 1 1 12 0Z" /><circle cx="10" cy="8.5" r="2" /></>,
+  };
+
+  return <svg aria-hidden="true" viewBox="0 0 20 20">{paths[name]}</svg>;
+};
+
 const proof = [
-  ["Certified", "Plumber & gas fitter", "✓"],
-  ["Straight-up", "Clear communication", "□"],
-  ["On time", "Reliable service", "◷"],
-  ["Auckland-wide", "Homes & small businesses", "⌂"],
+  ["Certified", "Plumber & gas fitter", "certified"],
+  ["Straight-up", "Clear communication", "communication"],
+  ["On time", "Reliable service", "time"],
+  ["Auckland-wide", "Homes & small businesses", "location"],
 ];
 
 const faqs = [
@@ -22,7 +35,9 @@ const faqs = [
   ["Are you certified?", "Yes. Work is carried out by a fully certified plumber and gas fitter in line with New Zealand safety standards."],
 ];
 
-export default function Home() {
+export default async function Home() {
+  const googleReviews = await getGoogleReviews();
+
   return (
     <>
       <section className="hero">
@@ -47,7 +62,7 @@ export default function Home() {
       </section>
 
       <section className="proof-strip" aria-label="Why choose Crystal Plumbing">
-        {proof.map(([title, sub, icon]) => <div className="proof-item" key={title}><span className="proof-character">{icon}</span><span><strong>{title}</strong><small>{sub}</small></span></div>)}
+        {proof.map(([title, sub, icon]) => <div className="proof-item" key={title}><span className="proof-icon"><ProofIcon name={icon} /></span><span><strong>{title}</strong><small>{sub}</small></span></div>)}
       </section>
 
       <section className="section services home-services">
@@ -76,27 +91,36 @@ export default function Home() {
           <h2>Good plumbing starts with a clear conversation.</h2>
           <p>Crystal Plumbing was built on one simple idea: plumbing should be easy and fuss-free. James gives Auckland homeowners straightforward communication, quality work and no surprises.</p>
           <blockquote>“No fancy talk—just clear plumbing and gas services done right.”</blockquote>
-          <Link className="text-link" href="/contact">Talk to James <Arrow /></Link>
+          <Link className="button primary" href="/contact">Talk to James <Arrow /></Link>
         </div>
       </section>
 
       <section className="section projects home-projects">
         <div className="section-heading">
           <div><p className="eyebrow">Recent work</p><h2>Finished with care.<br />Built to last.</h2></div>
-          <div className="heading-side"><p>Bathroom, kitchen and hot-water work completed across Auckland homes.</p><Link className="text-link dark" href="/projects">View all projects <Arrow /></Link></div>
+          <div className="heading-side"><p>Bathroom, kitchen and hot-water work completed across Auckland homes.</p><Link className="button primary" href="/projects">View our projects <Arrow /></Link></div>
         </div>
         <div className="project-grid">
           <figure className="project project-tall"><Image src="/images/shower.jpg" fill sizes="(max-width: 720px) 100vw, 32vw" alt="Modern brass shower installation" /><figcaption><span>Bathroom fit-out</span><strong>Brass detail shower</strong></figcaption></figure>
-          <figure className="project project-wide"><Image src="/images/kitchen.jpg" fill sizes="(max-width: 720px) 100vw, 54vw" alt="Bright modern kitchen plumbing fit-out" /><figcaption><span>Kitchen plumbing</span><strong>Full renovation fit-out</strong></figcaption></figure>
+          <figure className="project project-wide"><Image src="/images/kitchen-clean.png" fill sizes="(max-width: 720px) 100vw, 54vw" alt="Bright modern kitchen plumbing fit-out" /><figcaption><span>Kitchen plumbing</span><strong>Full renovation fit-out</strong></figcaption></figure>
           <figure className="project"><Image src="/images/hot-water.jpg" fill sizes="(max-width: 720px) 100vw, 27vw" alt="Efficient hot water system" /><figcaption><span>Hot water</span><strong>Efficient system upgrade</strong></figcaption></figure>
           <figure className="project"><Image src="/images/bathroom.jpg" fill sizes="(max-width: 720px) 100vw, 27vw" alt="Finished contemporary bathroom" /><figcaption><span>Bathroom renovation</span><strong>Clean modern finish</strong></figcaption></figure>
         </div>
       </section>
 
-      <section className="testimonial"><p className="eyebrow light">What our customers say</p><div className="stars" aria-label="5 out of 5 stars">★★★★★</div><blockquote>“Professional, courteous and transparent about the entire process. The team went above and beyond.”</blockquote><p className="customer">Aaron <span>· Auckland</span></p></section>
+      <section className="testimonial">
+        <p className="eyebrow light">What our customers say</p>
+        <h2>Trusted by Auckland homeowners.</h2>
+        <ReviewsCarousel
+          reviews={googleReviews.reviews}
+          rating={googleReviews.rating}
+          reviewCount={googleReviews.reviewCount}
+          reviewsUrl={GOOGLE_REVIEWS_URL}
+        />
+      </section>
 
       <section className="section faq-section">
-        <div className="faq-intro"><p className="eyebrow">Straight answers</p><h2>Questions?<br />Let’s clear them up.</h2><p>Still need a hand? Call James and talk through your project directly.</p><a className="text-link dark" href="tel:0276976797">027 697 6797 <Arrow /></a></div>
+        <div className="faq-intro"><p className="eyebrow">Straight answers</p><h2>Questions?<br />Let’s clear them up.</h2><p>Still need a hand? Call James and talk through your project directly.</p><a className="button primary faq-phone-button" href="tel:0276976797">027 697 6797 <Arrow /></a></div>
         <div className="faq-list">{faqs.map(([question, answer], index) => <details key={question} open={index === 0}><summary><span>0{index + 1}</span>{question}<b>+</b></summary><p>{answer}</p></details>)}</div>
       </section>
     </>

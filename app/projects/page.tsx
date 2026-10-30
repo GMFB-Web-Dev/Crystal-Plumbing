@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 const projects = [
   ["/images/shower.jpg", "Bathroom fit-out", "Brass detail shower", "A modern shower installation with clean tile work and carefully aligned brass fittings."],
-  ["/images/kitchen.jpg", "Kitchen plumbing", "Full renovation fit-out", "Complete kitchen plumbing prepared and finished as part of a bright residential renovation."],
+  ["/images/kitchen-clean.png", "Kitchen plumbing", "Full renovation fit-out", "Complete kitchen plumbing prepared and finished as part of a bright residential renovation."],
   ["/images/hot-water.jpg", "Hot water", "Efficient system upgrade", "A modern, efficient hot-water system installed with tidy pipework and easy service access."],
   ["/images/bathroom.jpg", "Bathroom renovation", "Clean modern finish", "A compact bathroom transformed with crisp fixtures, warm timber and a thoughtful layout."],
   ["/images/basin.jpg", "Bathroom plumbing", "Wall-mounted brassware", "A refined basin installation with concealed plumbing and carefully positioned brass fittings."],
@@ -21,7 +21,7 @@ const projects = [
 export default function ProjectsPage() {
   return (
     <>
-      <PageHero eyebrow="Recent work" title="Good work speaks for itself." description="A selection of plumbing, bathroom, kitchen and hot-water projects completed with care across Auckland." image="/images/kitchen.jpg" imageAlt="A completed modern kitchen fit-out" />
+      <PageHero eyebrow="Recent work" title="Good work speaks for itself." description="A selection of plumbing, bathroom, kitchen and hot-water projects completed with care across Auckland." image="/images/kitchen-clean.png" imageAlt="A completed modern kitchen fit-out" />
       <section className="section project-page-section">
         <div className="section-heading compact-heading"><div><p className="eyebrow">Project gallery</p><h2>Practical work. Polished finish.</h2></div><p>Every project is different, but the standard stays the same: clear planning, tidy work and careful finishing.</p></div>
         <div className="project-page-grid">{projects.map(([image, type, title, description], index) => <article key={title} className={index === 0 || index === 3 ? "project-page-card featured" : "project-page-card"}><div><Image src={image} fill sizes="(max-width: 700px) 100vw, 50vw" alt={title} /></div><span>{type}</span><h2>{title}</h2><p>{description}</p></article>)}</div>
