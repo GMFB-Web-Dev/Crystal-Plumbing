@@ -1,10 +1,6 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { FocusEvent, KeyboardEvent, useRef, useState } from "react";
 import MobileNav from "../MobileNav";
-import { services } from "../site-data";
 
 const Phone = () => (
   <svg aria-hidden="true" viewBox="0 0 24 24" className="button-icon">
@@ -13,19 +9,6 @@ const Phone = () => (
 );
 
 export default function SiteHeader() {
-  const [servicesOpen, setServicesOpen] = useState(false);
-  const servicesButton = useRef<HTMLButtonElement>(null);
-
-  function closeWhenFocusLeaves(event: FocusEvent<HTMLDivElement>) {
-    if (!event.currentTarget.contains(event.relatedTarget)) setServicesOpen(false);
-  }
-
-  function closeOnEscape(event: KeyboardEvent<HTMLDivElement>) {
-    if (event.key !== "Escape") return;
-    servicesButton.current?.focus();
-    setServicesOpen(false);
-  }
-
   return (
     <header className="site-header">
       <Link className="brand" href="/">
@@ -34,36 +17,11 @@ export default function SiteHeader() {
       </Link>
       <nav className="desktop-nav" aria-label="Main navigation">
         <Link href="/">Home</Link>
-        <div
-          className={`nav-dropdown${servicesOpen ? " is-open" : ""}`}
-          onMouseEnter={() => setServicesOpen(true)}
-          onMouseLeave={() => setServicesOpen(false)}
-          onFocus={() => setServicesOpen(true)}
-          onBlur={closeWhenFocusLeaves}
-          onKeyDown={closeOnEscape}
-        >
-          <button
-            ref={servicesButton}
-            className="nav-dropdown-trigger"
-            type="button"
-            aria-expanded={servicesOpen}
-            aria-controls="services-menu"
-            onClick={() => setServicesOpen((value) => !value)}
-          >
-            Services
-            <svg className="nav-chevron" aria-hidden="true" viewBox="0 0 12 8">
-              <path d="m1 1.5 5 5 5-5" />
-            </svg>
-          </button>
-          <div className="nav-dropdown-menu" id="services-menu">
-            <Link href="/services">All services</Link>
-            {services.map((service) => <Link href={service.href} key={service.slug}>{service.title}</Link>)}
-          </div>
-        </div>
+        <Link href="/services">Services</Link>
         <Link href="/projects">Projects</Link>
         <Link href="/contact">Contact</Link>
       </nav>
-      <a className="header-call" href="tel:0276976797"><Phone />Talk to James</a>
+      <a className="button primary header-call" href="tel:0276976797"><Phone />Talk to James</a>
       <MobileNav />
     </header>
   );
