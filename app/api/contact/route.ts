@@ -92,6 +92,44 @@ function escapeHtml(value: string) {
   });
 }
 
+async function verifyTurnstile(token: unknown, clientIp: string) {
+  const secret = process.env.TURNSTILE_SECRET;
+  const localHostnames = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
+  const expectedHostnames = new Set(
+    (process.env.TURNSTILE_HOSTNAMES || "")
+      .split(",")
+      .map((hostname) => hostname.trim())
+      .filter((hostname) => hostname && (process.env.NODE_ENV !== "production" || !localHostnames.has(hostname))),
+  );
+
+  if (!secret || !expectedHostnames.size || typeof token !== "string" || !token.trim() || token.length > 2048) {
+    return false;
+  }
+
+  try {
+    const verification = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
+      body: new URLSearchParams({
+        secret,
+        response: token,
+        ...(clientIp !== "unknown" ? { remoteip: clientIp } : {}),
+      }),
+    });
+    if (!verification.ok) return false;
+
+    const result = await verification.json();
+    return result.success === true
+      && result.action === "contact"
+      && typeof result.hostname === "string"
+      && expectedHostnames.has(result.hostname);
+  } catch {
+    return false;
+  }
+}
+
 function validatePayload(value: unknown): ContactPayload | null {
   if (!value || typeof value !== "object") return null;
   const payload = value as Record<string, unknown>;
@@ -99,11 +137,11 @@ function validatePayload(value: unknown): ContactPayload | null {
   const email = cleanText(payload.email, 254);
   const phone = typeof payload.phone === "string" ? payload.phone.trim() : "";
   const service = cleanText(payload.service, 50);
-  const message = cleanText(payload.message, 4000);
+  const message = payload.message === undefined ? "" : typeof payload.message === "string" ? payload.message.trim() : null;
   const company = typeof payload.company === "string" ? payload.company.trim() : "";
   const requestId = cleanText(payload.requestId, 100);
 
-  if (!name || !email || !service || !message || message.length < 10 || !requestId || !services.has(service)) return null;
+  if (!name || !email || !service || message === null || message.length > 4000 || !requestId || !services.has(service)) return null;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return null;
   if (phone && (phone.length > 40 || !/^[0-9+()\s-]{7,40}$/.test(phone) || phone.replace(/\D/g, "").length < 7)) return null;
   if (!/^[0-9a-f-]{36}$/i.test(requestId)) return null;
@@ -212,6 +250,11 @@ export async function POST(request: Request) {
   const payload = validatePayload(body);
   if (!payload) {
     return response(request, { error: "Please check the form and try again." }, 400);
+  }
+
+  const token = (body as Record<string, unknown>)["cf-turnstile-response"];
+  if (!await verifyTurnstile(token, clientId)) {
+    return response(request, { error: "Verification failed. Please complete the verification again and resend your enquiry." }, 403);
   }
 
   // Silently accept bot submissions so the honeypot does not reveal itself.

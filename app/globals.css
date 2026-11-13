@@ -449,6 +449,7 @@ footer { background: #030d1d; color: #fff; padding: 68px clamp(22px, 6vw, 90px) 
 .contact-form label { display: flex; flex-direction: column; gap: 9px; font-size: 10px; text-transform: uppercase; letter-spacing: .13em; font-weight: 800; margin-bottom: 20px; }
 .contact-form input, .contact-form select, .contact-form textarea { width: 100%; border: 1px solid var(--line); border-radius: 9px; background: #f8fafb; color: var(--ink); padding: 15px; font: inherit; font-size: 15px; text-transform: none; letter-spacing: normal; outline: 0; transition: border-color .2s, box-shadow .2s; }
 .contact-form textarea { resize: vertical; min-height: 130px; }
+.contact-verification { margin-bottom: 20px; }
 .contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(38,90,151,.12); }
 .form-submit { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
 .form-submit button:disabled { cursor: wait; opacity: .65; }

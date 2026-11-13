@@ -2,7 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FormEvent, useRef, useState } from "react";
+import Script from "next/script";
+import { FormEvent, useEffect, useRef, useState } from "react";
+
+type TurnstileApi = {
+  render: (container: HTMLElement, options: {
+    sitekey: string;
+    action: string;
+    theme: "light";
+    size: "flexible" | "compact";
+    callback: (token: string) => void;
+    "expired-callback": () => void;
+    "error-callback": () => void;
+  }) => string;
+  reset: (widgetId: string) => void;
+  remove: (widgetId: string) => void;
+};
+
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi;
+  }
+}
 
 export default function ContactSection() {
   const pathname = usePathname();
@@ -14,16 +35,49 @@ export default function ContactSection() {
   const [isSending, setIsSending] = useState(false);
   const isSubmitting = useRef(false);
   const requestId = useRef<string | null>(null);
+  const turnstileContainer = useRef<HTMLDivElement>(null);
+  const turnstileWidget = useRef<string | null>(null);
+  const [turnstileReady, setTurnstileReady] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+
+  useEffect(() => {
+    const turnstile = window.turnstile;
+    if (!turnstileReady || !turnstile || !turnstileContainer.current) return;
+
+    const widgetId = turnstile.render(turnstileContainer.current, {
+      sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAF_WmtpkdcmpoUST",
+      action: "contact",
+      theme: "light",
+      size: turnstileContainer.current.clientWidth < 300 ? "compact" : "flexible",
+      callback: (token) => setTurnstileToken(token),
+      "expired-callback": () => setTurnstileToken(""),
+      "error-callback": () => {
+        setTurnstileToken("");
+        setStatus({ message: "Verification failed to load. Please refresh the page or call James.", type: "error" });
+      },
+    });
+    turnstileWidget.current = widgetId;
+
+    return () => {
+      turnstileWidget.current = null;
+      turnstile.remove(widgetId);
+    };
+  }, [turnstileReady]);
 
   async function submitForm(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isSubmitting.current) return;
+    if (!turnstileToken) {
+      setStatus({ message: "Please complete the verification before sending your enquiry.", type: "error" });
+      return;
+    }
 
     const form = event.currentTarget;
     requestId.current ||= crypto.randomUUID();
     const data = {
       ...Object.fromEntries(new FormData(form)),
       requestId: requestId.current,
+      "cf-turnstile-response": turnstileToken,
     };
     isSubmitting.current = true;
     setIsSending(true);
@@ -53,6 +107,10 @@ export default function ContactSection() {
         type: "error",
       });
     } finally {
+      setTurnstileToken("");
+      if (turnstileWidget.current !== null) {
+        window.turnstile?.reset(turnstileWidget.current);
+      }
       isSubmitting.current = false;
       setIsSending(false);
     }
@@ -60,6 +118,11 @@ export default function ContactSection() {
 
   return (
     <section className={`contact-form-section${isContactPage ? " contact-page-form" : ""}`} id="quote">
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+        onReady={() => setTurnstileReady(true)}
+        onError={() => setStatus({ message: "Verification failed to load. Please refresh the page or call James.", type: "error" })}
+      />
       <div className="contact-form-intro">
         <p className="eyebrow light">Ready when you are</p>
         <h2>Tell us what<br />needs sorting.</h2>
@@ -85,8 +148,9 @@ export default function ContactSection() {
           <label>Phone<input name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={40} pattern="(?:\d|\s|\+|\(|\)|-){7,40}" placeholder="Your phone number" /></label>
           <label>Service<select name="service" defaultValue="" required><option value="" disabled>What can we help with?</option><option>Plumbing</option><option>Gas fitting</option><option>Hot water</option><option>Renovation or fit-out</option><option>General enquiry</option></select></label>
         </div>
-        <label>Project details<textarea name="message" rows={5} required minLength={10} maxLength={4000} placeholder="Tell us a little about the job…" /></label>
-        <div className="form-submit"><button className="button primary" type="submit" disabled={isSending}>{isSending ? "Sending…" : "Send enquiry"} <span aria-hidden="true">→</span></button><small>No obligation. We’ll respond as soon as we can.</small></div>
+        <label>Project details (optional)<textarea name="message" rows={5} maxLength={4000} placeholder="Tell us a little about the job…" /></label>
+        <div ref={turnstileContainer} className="contact-verification" aria-label="Bot verification" />
+        <div className="form-submit"><button className="button primary" type="submit" disabled={isSending || !turnstileToken}>{isSending ? "Sending…" : "Send enquiry"} <span aria-hidden="true">→</span></button><small>No obligation. We’ll respond as soon as we can.</small></div>
         <p className="form-privacy">By sending this form, you agree that we may use your details to respond to your enquiry. See our <Link href="/privacy-policy">privacy policy</Link>.</p>
         <p className={`form-status ${status.type}`} role="status" aria-live="polite">{status.message}</p>
       </form>

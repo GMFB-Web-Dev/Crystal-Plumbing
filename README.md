@@ -12,6 +12,24 @@ CONTACT_FORM_FROM_EMAIL=Crystal Plumbing Website <enquiries@your-verified-domain
 
 `CONTACT_FORM_FROM_EMAIL` must use a domain verified in Resend with SPF and DKIM configured. `CONTACT_FORM_TO_EMAIL` defaults to `info@crystalplumbing.co.nz` when omitted. The visitor's submitted email is set as the reply-to address. The handler accepts same-origin browser submissions on the deployed domain, validates every field, rate-limits repeated requests and uses Resend idempotency keys to avoid duplicate delivery.
 
+## Contact form Turnstile
+
+The shared contact form uses the existing Cloudflare Turnstile widget `0x4AAAAAAF_WmtpkdcmpoUST`, with action `contact`. The server calls Siteverify before sending any enquiry and requires a successful result with that action and an explicitly allowed frontend hostname.
+
+Configure these variables in the existing Vercel project's environment settings, then redeploy:
+
+```bash
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAAF_WmtpkdcmpoUST
+TURNSTILE_SECRET=<existing widget secret, stored only in the deployment secret store>
+TURNSTILE_HOSTNAMES=crystalplumbing.co.nz,www.crystalplumbing.co.nz
+```
+
+The public site key defaults to the existing widget's key. `TURNSTILE_SECRET` is server-only and must never use a `NEXT_PUBLIC_` prefix. Retrieve and store the existing widget secret using Cloudflare's [guarded existing-widget flow](https://developers.cloudflare.com/turnstile/spin/prompt.md); do not put it in source control or chat.
+
+Use only the frontend hostnames for that deployment in `TURNSTILE_HOSTNAMES`. For local development, set `TURNSTILE_HOSTNAMES=localhost,127.0.0.1` in an ignored `.env.local`, and ensure those hostnames are allowed by the widget. Preview deployments need their own explicit hostname allowlist. Production-mode servers reject local hostnames even if they are accidentally configured. Missing configuration, missing or invalid tokens, and Siteverify failures reject the submission. The browser refreshes the challenge after every submission attempt so retries receive a fresh token.
+
+Before considering setup complete, exercise the actual configured backend with a fresh real widget token, confirm a successful submission, then confirm replay rejection after Cloudflare's token redemption has propagated. Mocked tests do not verify the deployed secret or domain configuration.
+
 ## Google reviews
 
 The homepage requests the latest reviews from Google whenever a visitor loads the page. Enable the Places API used by Place Details in Google Cloud and add these server-only environment variables in Vercel:
