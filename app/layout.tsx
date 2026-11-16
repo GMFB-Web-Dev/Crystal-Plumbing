@@ -1,3 +1,4 @@
+import Script from "next/script";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import ContactSection from "./components/ContactSection";
@@ -76,6 +77,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <a className="skip-link" href="#main-content">Skip to main content</a>
+        {process.env.VERCEL_ENV === "production" && (
+          <>
+            <Script src="https://www.googletagmanager.com/gtag/js?id=G-XCPE0ZB1VM" strategy="afterInteractive" />
+            <Script id="crystal-plumbing-ga4" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+                function gtag(){window.dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-XCPE0ZB1VM');`}
+            </Script>
+          </>
+        )}
         <SiteHeader />
         <main id="main-content" tabIndex={-1}>{children}</main>
         <ContactSection />
